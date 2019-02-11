@@ -99,6 +99,9 @@ function doExport() {
     delete item.relations
     delete item.version
     delete item.citekey
+    delete item.itemID
+    delete item.key
+    delete item.libraryID
 
     const creators = (item.creators || []).map(creator => {
       let name = ''
@@ -111,6 +114,7 @@ function doExport() {
     delete item.creators
 
     item.notes = item.notes ? item.notes.map(note => `<div>${note.note.replace(/[\r\n]+/g, ' ')}</div>`).join('\n') : ''
+    item.extra = (item.extra || '').replace(/[\r\n]+/g, ' ')
 
     item.year = null
     if (item.date) {
