@@ -52,7 +52,6 @@ const aliases = Object.entries({
 const ignore = new Set(['attachment', 'note'])
 
 function quote(value) {
-  Zotero.debug(`quote: ${JSON.stringify(value)}`)
   if (typeof value === 'number') return `${value}`
   if (!value) return ''
   if (!value.match(/[,"]/)) return value
@@ -60,7 +59,6 @@ function quote(value) {
 }
 
 function make_row(cells) {
-  Zotero.debug(`make_row ${JSON.stringify(cells)}`)
   return cells.map(quote).join(',') + '\r\n'
 }
 
@@ -85,7 +83,6 @@ function doExport() {
 
   const items = []
   for (const item of getItems()) {
-    Zotero.debug(`ST: ${Object.keys(item)} collections: ${JSON.stringify(item.collections)}`)
     if (ignore.has(item.itemType)) continue
 
     for (const [alias, field] of aliases) {
