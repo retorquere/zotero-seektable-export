@@ -86,8 +86,10 @@ function doExport() {
     if (ignore.has(item.itemType)) continue
 
     for (const [alias, field] of aliases) {
-      item[field] = item[alias]
-      delete item[alias]
+      if (typeof item[alias] !== 'undefined') {
+        item[field] = item[alias]
+        delete item[alias]
+      }
     }
 
     delete item.attachments
@@ -105,7 +107,14 @@ function doExport() {
     if (!creators.length) creators.push('')
     delete item.creators
 
-    item.notes = item.notes ? item.notes.map(note => `<div>${note.note}</div>`).join('\n') : ''
+    item.notes = item.notes ? item.notes.map(note => `<div>${note.note.replace(/[\r\n]+/g, ' ')}</div>`).join('\n') : ''
+
+    item.year = null
+    if (item.date) {
+      const date = Zotero.Utilities.strToDate(item.date)
+      if (date) item.year = date.year
+      item.date = Zotero.Utilities.strToISO(item.date) || item.date
+    }
 
     const tags = (item.tags || []).map(tag => tag.tag)
     if (!tags.length) tags.push('')
