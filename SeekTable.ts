@@ -86,10 +86,8 @@ function doExport() {
     if (ignore.has(item.itemType)) continue
 
     for (const [alias, field] of aliases) {
-      if (item[alias]) {
-        item[field] = item[alias]
-        delete item[alias]
-      }
+      item[field] = item[alias]
+      delete item[alias]
     }
 
     delete item.attachments
