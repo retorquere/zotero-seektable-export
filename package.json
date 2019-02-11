@@ -2,6 +2,7 @@
   "name": "zotero-seektable-export",
   "version": "0.0.6",
   "description": "SeekTable export for Zotero",
+  "exporter": "SeekTable",
   "author": {
     "name": "Emiliano Heyns",
     "email": "Emiliano.Heyns@iris-advies.com"
@@ -10,9 +11,9 @@
     "test": "tslint -t stylish --project .",
     "prestart": "npm test",
     "start": "tsc && node build.js",
-    "zot": "npm start && cp 'build/SeekTable.js' ~/.BBTZ5TEST/zotero/translators && /usr/lib/zotero/zotero -P BBTZ5TEST -ZoteroDebugText -datadir profile > ~/.BBTZ5TEST.log &",
+    "zot": "npm start && cp \"build/$npm_package_exporter.js\" ~/.BBTZ5TEST/zotero/translators && /usr/lib/zotero/zotero -P BBTZ5TEST -ZoteroDebugText -datadir profile > ~/.BBTZ5TEST.log &",
     "postversion": "git push --tags && npm start && npm run make-release",
-    "make-release": "github-release upload --owner retorquere --repo $npm_package_name --tag \"v$npm_package_version\" --name \"v$npm_package_version\" --body \"$npm_package_description. Drop SeekTable.js into the Zotero translators directory, and restart Zotero.\" \"build/SeekTable.js\""
+    "make-release": "github-release upload --owner retorquere --repo $npm_package_name --tag \"v$npm_package_version\" --name \"v$npm_package_version\" --body \"$npm_package_description. Drop $npm_package_exporter.js into the Zotero translators directory, and restart Zotero.\" \"build/$npm_package_exporter.js\""
   },
   "directories": {
     "test": "test"
