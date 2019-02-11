@@ -49,8 +49,6 @@ const aliases = Object.entries({
   dictionaryTitle: 'publicationTitle',
 })
 
-const ignore = new Set(['attachment', 'note'])
-
 function quote(value) {
   if (typeof value === 'number') return `${value}`
   if (!value) return ''
@@ -85,7 +83,12 @@ function doExport() {
 
   const items = []
   for (const item of getItems()) {
-    if (ignore.has(item.itemType)) continue
+    if (item.itemType === 'attachment') continue
+
+    if (item.itemType === 'note') {
+      item.notes = item.note ?  [ item.note ] : []
+      delete item.notes
+    }
 
     for (const [alias, field] of aliases) {
       if (typeof item[alias] !== 'undefined') {
@@ -113,7 +116,15 @@ function doExport() {
     if (!creators.length) creators.push({})
     delete item.creators
 
-    item.notes = item.notes ? item.notes.map(note => `<div>${note.note.replace(/[\r\n]+/g, ' ')}</div>`).join('\n') : ''
+    if (!item.notes) {
+      item.notes = ''
+    } else if (item.notes.length === 1) {
+      item.notes = item.notes[0].note
+    } else {
+      item.notes = item.notes.map(note => `<div>${note.note}</div>`).join('')
+    }
+    item.notes = item.notes.replace(/[\r\n]+/g, ' ')
+
     item.extra = (item.extra || '').replace(/[\r\n]+/g, ' ')
 
     item.year = null
