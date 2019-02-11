@@ -1,0 +1,21 @@
+{
+  "translatorID": "7ddf943e-8729-4764-ae1e-654b56822d80",
+  "label": "SeekTable",
+  "description": "Exports items to CSV with one row per tag/collection/creator permutation",
+  "creator": "Emiliano Heyns",
+  "target": "csv",
+  "minVersion": "4.0.27",
+  "maxVersion": "",
+  "configOptions": {
+    "getCollections": true
+  },
+  "displayOptions": {
+    "exportNotes": true
+  },
+  "translatorType": 2,
+  "browserSupport": "gcsv",
+  "priority": 99,
+  "inRepository": false
+}
+
+
