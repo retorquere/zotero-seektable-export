@@ -81,6 +81,8 @@ function doExport() {
     collectionName[collection.primary.key] = collection.name
   }
 
+  const include_automatic_tags = Zotero.getOption('Include automatic tags')
+
   const items = []
   for (const item of getItems()) {
     if (ignore.has(item.itemType)) continue
@@ -96,15 +98,16 @@ function doExport() {
     delete item.uri
     delete item.relations
     delete item.version
+    delete item.citekey
 
     const creators = (item.creators || []).map(creator => {
       let name = ''
       if (creator.name) name = creator.name
       if (creator.lastName) name = creator.lastName
       if (creator.firstName) name += (name ? ', ' : '') + creator.firstName
-      return name
+      return { name, type: creator.creatorType }
     })
-    if (!creators.length) creators.push('')
+    if (!creators.length) creators.push({})
     delete item.creators
 
     item.notes = item.notes ? item.notes.map(note => `<div>${note.note.replace(/[\r\n]+/g, ' ')}</div>`).join('\n') : ''
@@ -116,7 +119,7 @@ function doExport() {
       item.date = Zotero.Utilities.strToISO(item.date) || item.date
     }
 
-    const tags = (item.tags || []).map(tag => tag.tag)
+    const tags = (item.tags || []).filter(tag => include_automatic_tags || tag.type !== 1).map(tag => tag.tag) // skip automatic tags
     if (!tags.length) tags.push('')
     delete item.tags
 
@@ -127,7 +130,7 @@ function doExport() {
     for (const creator of creators) {
       for (const collection of collections) {
         for (const tag of tags) {
-          items.push({...item, creator, tag, collection})
+          items.push({...item, creator: creator.name, creatorType: creator.type, tag, collection})
         }
       }
     }

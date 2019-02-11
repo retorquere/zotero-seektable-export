@@ -10,7 +10,8 @@
     "getCollections": true
   },
   "displayOptions": {
-    "exportNotes": true
+    "exportNotes": true,
+    "Include automatic tags": false
   },
   "translatorType": 2,
   "browserSupport": "gcsv",
