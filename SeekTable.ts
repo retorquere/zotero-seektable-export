@@ -86,7 +86,7 @@ function doExport() {
     if (item.itemType === 'attachment') continue
 
     if (item.itemType === 'note') {
-      item.notes = item.note ?  [ { note: item.note } ] : []
+      item.notes = item.note ? [ { note: item.note } ] : []
       delete item.notes
     }
 
