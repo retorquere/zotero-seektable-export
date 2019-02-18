@@ -106,15 +106,9 @@ function doExport() {
     delete item.key
     delete item.libraryID
 
-    const creators = (item.creators || []).map(creator => {
-      let name = ''
-      if (creator.name) name = creator.name
-      if (creator.lastName) name = creator.lastName
-      if (creator.firstName) name += (name ? ', ' : '') + creator.firstName
-      return { name, type: creator.creatorType }
-    })
-    if (!creators.length) creators.push({})
-    delete item.creators
+    item.creators = (item.creators || []).map(creator => creator.name ? creator.name : [creator.lastName, creator.firstName].filter(name => name).join(', ')).join('; ')
+
+    if (!item.url && item.DOI) item.url = `${item.DOI.startsWith('http') ? '' : 'http://doi.org/'}${item.DOI}`
 
     if (!item.notes) {
       item.notes = ''
@@ -142,11 +136,9 @@ function doExport() {
     if (!collections.length) collections.push('')
     delete item.collections
 
-    for (const creator of creators) {
-      for (const collection of collections) {
-        for (const tag of tags) {
-          items.push({...item, creator: creator.name, creatorType: creator.type, tag, collection})
-        }
+    for (const collection of collections) {
+      for (const tag of tags) {
+        items.push({...item, tag, collection})
       }
     }
   }
