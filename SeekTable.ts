@@ -117,9 +117,9 @@ function doExport() {
     } else {
       item.notes = item.notes.map(note => `<div>${note.note}</div>`).join('')
     }
-    item.notes = item.notes.replace(/[\r\n]+/g, ' ')
+    item.notes = item.notes.replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
 
-    item.extra = (item.extra || '').replace(/[\r\n]+/g, ' ')
+    item.extra = (item.extra || '').replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
 
     item.year = null
     if (item.date) {
