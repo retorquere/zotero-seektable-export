@@ -11,7 +11,7 @@
   },
   "displayOptions": {
     "exportNotes": true,
-    "Include automatic tags": false
+    "Bundle automatic tags": true
   },
   "translatorType": 2,
   "browserSupport": "gcsv",

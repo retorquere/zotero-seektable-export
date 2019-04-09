@@ -73,13 +73,49 @@ function makeGenerator(type) {
 const getCollections = makeGenerator('Collection')
 const getItems = makeGenerator('Item')
 
+function assign_path(collection, collections) {
+  if (!collection) return []
+
+  if (collection.parent && !collections[collection.parent]) collection.parent = false
+  collection.path = collection.path || assign_path(collections[collection.parent], collections).concat(collection.name)
+
+  return collection.path.slice()
+}
+
 function doExport() {
-  const collectionName = {}
+  const collections = {}
   for (const collection of getCollections()) {
-    collectionName[collection.primary.key] = collection.name
+    const children = collection.children || collection.descendents || []
+    const key = (collection.primary ? collection.primary : collection).key
+
+    collections[key] = {
+      id: collection.id,
+      key,
+      parent: collection.fields.parentKey,
+      name: collection.name,
+      items: collection.childItems,
+      collections: children.filter(coll => coll.type === 'collection').map(coll => coll.key),
+    }
+  }
+  for (const collection of Object.values(collections)) {
+    assign_path(collection, collections)
   }
 
-  const include_automatic_tags = Zotero.getOption('Include automatic tags')
+  const bundle_automatic_tags = Zotero.getOption('Bundle automatic tags')
+  let bundle_automatic_tags_sep = ', '
+  if (bundle_automatic_tags) {
+    bundle_automatic_tags_sep = Zotero.getHiddenPref('SeekTable.delimiter.automatic_tags')
+    if (!bundle_automatic_tags_sep || bundle_automatic_tags_sep.toLowerCase() === 'comma') {
+      bundle_automatic_tags_sep = ', '
+
+    } else if (bundle_automatic_tags_sep.match(/^(cr|lf)+$/i)) {
+      bundle_automatic_tags_sep = bundle_automatic_tags_sep.replace(/cr/ig, '\r').replace(/lf/ig, '\n')
+
+    } else {
+        Zotero.debug(`using verbatim SeekTable.delimiter.automatic_tags ${JSON.stringify(bundle_automatic_tags_sep)}`)
+
+    }
+  }
 
   const items = []
   for (const item of getItems()) {
@@ -128,17 +164,36 @@ function doExport() {
       item.date = Zotero.Utilities.strToISO(item.date) || item.date
     }
 
-    const tags = (item.tags || []).filter(tag => include_automatic_tags || tag.type !== 1).map(tag => tag.tag) // skip automatic tags
-    if (!tags.length) tags.push('')
-    delete item.tags
-
-    const collections = Array.from(new Set((item.collections || []).map(key => collectionName[key]).filter(coll => coll)))
-    if (!collections.length) collections.push('')
+    const collection_paths = (item.collections || []).map(key => collections[key] ? collections[key].path.join(', ') : '').filter(coll => coll)
+    if (!collection_paths.length) collection_paths.push('')
     delete item.collections
 
-    for (const collection of collections) {
-      for (const tag of tags) {
-        items.push({...item, tag, collection})
+    const tags = {
+      manual: (item.tags || []).filter(tag => tag.type !== 1).map(tag => tag.tag),
+      automatic: (item.tags || []).filter(tag => tag.type === 1).map(tag => tag.tag),
+    }
+    for (const type of Object.keys(tags)) {
+      if (!tags[type].length) tags[type].push('')
+    }
+    delete item.tags
+
+    if (bundle_automatic_tags) {
+      item.automatic_tags = tags.automatic.join(bundle_automatic_tags_sep)
+
+      for (const collection of collection_paths) {
+        for (const tag of tags.manual) {
+          items.push({...item, tag, collection})
+        }
+      }
+
+    } else {
+
+      for (const collection of collection_paths) {
+        for (const tag of tags.manual) {
+          for (const automatic_tag of tags.automatic) {
+            items.push({...item, tag, automatic_tag, collection})
+          }
+        }
       }
     }
   }
