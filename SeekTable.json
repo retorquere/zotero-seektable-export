@@ -1,9 +1,9 @@
 {
-  "translatorID": "7ddf943e-8729-4764-ae1e-654b56822d80",
-  "label": "SeekTable",
-  "description": "Exports items to CSV with one row per tag/collection/creator permutation",
+  "translatorID": "7ddf943e-8729-4764-ae1e-654b56822d90",
+  "label": "SeekTable FODS",
+  "description": "Exports items to FODS with one row per tag/collection/creator permutation",
   "creator": "Emiliano Heyns",
-  "target": "csv",
+  "target": "fods",
   "minVersion": "4.0.27",
   "maxVersion": "",
   "configOptions": {
