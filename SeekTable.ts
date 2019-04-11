@@ -101,7 +101,7 @@ function doExport() {
     assign_path(collection, collections)
   }
   for (const key of Object.keys(collections)) {
-    collections[key] = collections[key].path.join(', ')
+    collections[key] = collections[key].path
   }
 
   const bundle_automatic_tags = Zotero.getOption('Bundle automatic tags')
@@ -167,8 +167,8 @@ function doExport() {
       item.date = Zotero.Utilities.strToISO(item.date) || item.date
     }
 
-    const collection_paths = (item.collections || []).map(key => collections[key]).filter(coll => coll)
-    if (!collection_paths.length) collection_paths.push('')
+    const collection_paths = (item.collections || []).map(key => collections[key]).filter(path => path && path.length)
+    if (!collection_paths.length) collection_paths.push([])
     delete item.collections
 
     const tags = {
@@ -185,7 +185,7 @@ function doExport() {
 
       for (const collection of collection_paths) {
         for (const tag of tags.manual) {
-          items.push({...item, tag, collection})
+          items.push({ ...item, tag, parent_collections: collection.join(', '), collection: collection[collection.length - 1] || '' })
         }
       }
 
@@ -194,7 +194,7 @@ function doExport() {
       for (const collection of collection_paths) {
         for (const tag of tags.manual) {
           for (const automatic_tag of tags.automatic) {
-            items.push({...item, tag, automatic_tag, collection})
+            items.push({ ...item, tag, automatic_tag, parent_collections: collection.join(', '), collection: collection[collection.length - 1] || '' })
           }
         }
       }
