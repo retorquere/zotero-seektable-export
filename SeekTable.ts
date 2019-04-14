@@ -190,6 +190,7 @@ function doExport() {
       }
 
     } else {
+      item.all_automatic_tags = tags.automatic.join(bundle_automatic_tags_sep)
 
       for (const collection of collection_paths) {
         for (const tag of tags.manual) {
