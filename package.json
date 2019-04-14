@@ -1,6 +1,6 @@
 {
   "name": "zotero-seektable-export",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "SeekTable export for Zotero",
   "exporter": "SeekTable",
   "author": {
