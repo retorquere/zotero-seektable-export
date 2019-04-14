@@ -159,6 +159,7 @@ function doExport() {
     item.notes = item.notes.replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
 
     item.extra = (item.extra || '').replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
+    if (item.extra.includes(':')) item.extra = ''
 
     item.year = null
     if (item.date) {
