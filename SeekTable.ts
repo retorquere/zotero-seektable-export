@@ -147,8 +147,6 @@ function doExport() {
 
     item.creators = (item.creators || []).map(creator => creator.name ? creator.name : [creator.lastName, creator.firstName].filter(name => name).join(', ')).join('; ')
 
-    if (!item.url && item.DOI) item.url = `${item.DOI.startsWith('http') ? '' : 'http://doi.org/'}${item.DOI}`
-
     if (!item.notes) {
       item.notes = ''
     } else if (item.notes.length === 1) {
@@ -158,19 +156,25 @@ function doExport() {
     }
     item.notes = item.notes.replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
 
-    item.extra = (item.extra || '').replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
+    item.extra = item.extra || ''
+
     if (!item.url) {
-      item.extra = item.extra.replace(/(?:^|\n)PMCID:\s*([^\n]+)/, (_, pmcid) => {
-        item.url = `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/`
+      item.extra = item.extra.replace(/^PMCID:\s*(?:PMC)?([0-9]+)$/m, (_, pmcid) => {
+        item.url = `https://www.ncbi.nlm.nih.gov/pmc/articles/PMC${pmcid}/`
         return ''
-      }).strip()
+      }).trim()
     }
+
+    if (!item.url && item.DOI) item.url = `${item.DOI.startsWith('http') ? '' : 'http://doi.org/'}${item.DOI}`
+
     if (!item.url) {
-      item.extra = item.extra.replace(/(?:^|\n)PMID:\s*([^\n]+)/, (_, pmid) => {
+      item.extra = item.extra.replace(/^PMID:\s*([0-9]+)$/m, (_, pmid) => {
         item.url = `https://www.ncbi.nlm.nih.gov/pubmed/${pmid}`
         return ''
-      }).strip()
+      }).trim()
     }
+
+    item.extra = item.extra.replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
     if (item.extra.includes(':')) item.extra = ''
 
     item.year = null
