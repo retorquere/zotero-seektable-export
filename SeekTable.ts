@@ -159,6 +159,18 @@ function doExport() {
     item.notes = item.notes.replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
 
     item.extra = (item.extra || '').replace(/[\r\n]+/g, ' ').replace(/\u00A0/g, ' ')
+    if (!item.url) {
+      item.extra = item.extra.replace(/(?:^|\n)PMCID:\s*([^\n]+)/, (_, pmcid) => {
+        item.url = `https://www.ncbi.nlm.nih.gov/pmc/articles/${pmcid}/`
+        return ''
+      }).strip()
+    }
+    if (!item.url) {
+      item.extra = item.extra.replace(/(?:^|\n)PMID:\s*([^\n]+)/, (_, pmid) => {
+        item.url = `https://www.ncbi.nlm.nih.gov/pubmed/${pmid}`
+        return ''
+      }).strip()
+    }
     if (item.extra.includes(':')) item.extra = ''
 
     item.year = null
