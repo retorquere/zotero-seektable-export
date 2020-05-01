@@ -13,7 +13,9 @@
     "start": "tsc && node build.js",
     "zotero": "npm start && cp \"build/$npm_package_exporter.js\" ~/.BBTZ5TEST/zotero/translators && /usr/lib/zotero/zotero -P BBTZ5TEST -ZoteroDebugText -datadir profile > ~/.BBTZ5TEST.log &",
     "postversion": "git push && npm start && npm run make-release",
-    "make-release": "github-release upload --owner retorquere --repo $npm_package_name --tag \"v$npm_package_version\" --name \"v$npm_package_version\" --body \"$npm_package_description. Drop $npm_package_exporter.js into the Zotero translators directory, and restart Zotero.\" \"build/$npm_package_exporter.js\""
+    "make-release": "github-release upload --owner retorquere --repo $npm_package_name --tag \"v$npm_package_version\" --name \"v$npm_package_version\" --body \"$npm_package_description. Drop $npm_package_exporter.js into the Zotero translators directory, and restart Zotero.\" \"build/$npm_package_exporter.js\"",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "directories": {
     "test": "test"
@@ -25,7 +27,8 @@
     "npm-check-updates": "^3.1.7",
     "ts-node": "^8.0.3",
     "tslint": "^5.15.0",
-    "typescript": "^3.4.2"
+    "typescript": "^3.4.2",
+    "snyk": "^1.316.1"
   },
   "repository": {
     "type": "git",
@@ -34,5 +37,6 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/retorquere/zotero-thebrain-export/issues"
-  }
+  },
+  "snyk": true
 }
